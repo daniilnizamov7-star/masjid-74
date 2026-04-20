@@ -7,11 +7,8 @@
   <meta name="description" content="Приложение мечети: расписание, объявления, помощь общине">
   <title>🕌 Мечеть — Община онлайн</title>
   
-  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
-  
-  <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://namaz-drab.vercel.app">
   
   <style>
@@ -79,7 +76,6 @@
     .lesson-info h4 { font-size: 15px; margin-bottom: 2px; }
     .lesson-info span { font-size: 13px; color: var(--tl); }
 
-    /* PWA install prompt */
     #install-prompt {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: var(--p); color: white; padding: 12px 20px; border-radius: 50px;
@@ -93,7 +89,6 @@
     }
     @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
     
-    /* 🔹 Подсветка следующего намаза */
     .prayer-time {
       padding: 2px 6px;
       border-radius: 4px;
@@ -106,7 +101,6 @@
       box-shadow: 0 2px 8px rgba(212,175,55,0.4);
     }
 
-    /* Стили для экрана выбора роли */
     #role-selector {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       min-height: 100vh; padding: 20px; background: var(--bg); text-align: center;
@@ -118,7 +112,6 @@
 </head>
 <body>
 
-  <!-- ЭКРАН ВЫБОРА РОЛИ (появляется только первый раз) -->
   <div id="role-selector" class="hidden">
     <h1>🕌 Добро пожаловать</h1>
     <p>Приложение мечети</p>
@@ -129,7 +122,6 @@
     <p style="margin-top:30px;font-size:12px;color:var(--tl);">Выбор сохраняется на устройстве.</p>
   </div>
 
-  <!-- ОСНОВНОЙ ИНТЕРФЕЙС (скрыт до выбора роли) -->
   <div id="app-interface" class="hidden">
     <header>
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -141,7 +133,6 @@
       </div>
     </header>
 
-    <!-- Вкладки (Показываем только для прихожанина, у админа своя навигация или этот же интерфейс с админ-панелью) -->
     <nav class="tabs" id="main-nav">
       <button class="tab-btn active" onclick="tab('sched', this)"><i>🕌</i>Намаз</button>
       <button class="tab-btn" onclick="tab('imp', this)"><i>📢</i>Важное</button>
@@ -151,7 +142,6 @@
     </nav>
 
     <main>
-      <!-- 🔹 1. РАСПИСАНИЕ НАМАЗОВ — ПЕРВЫЙ ЭКРАН -->
       <section id="sched" class="section active">
         <div class="card" style="border:2px solid var(--a); background:#FFFBF0; text-align:center;">
           <h3 style="color:#8B7500; margin:0 0 8px;">🕋 Время намазов на сегодня</h3>
@@ -187,12 +177,10 @@
         </div>
       </section>
 
-      <!-- 🔹 2. ВАЖНОЕ -->
       <section id="imp" class="section">
         <div id="ann-list"><div class="card" style="text-align:center;">📢 Загрузка...</div></div>
       </section>
 
-      <!-- 🔹 3. ХУТБА -->
       <section id="khutbah" class="section">
         <div class="card" style="background:#E8F5E9; border:1px solid #4CAF50;">
           <h3 style="color:#2E7D32; margin:0;">📖 Пятничная хутба</h3>
@@ -204,7 +192,6 @@
         </div>
       </section>
 
-      <!-- 🔹 4. ВОЛОНТЁРЫ -->
       <section id="ms" class="section">
         <div class="card" style="background:#E8F5E9; border:1px solid #4CAF50;">
           <h3 style="color:#2E7D32; margin:0;">🤝 Садака Джария своими руками</h3>
@@ -226,7 +213,6 @@
         </div>
       </section>
 
-      <!-- 🔹 5. БЛАГОТВОРИТЕЛЬНОСТЬ -->
       <section id="aid" class="section">
         <div class="toggle-btns">
           <button class="btn btn-primary" onclick="aidToggle('req')">🆘 Нужна помощь</button>
@@ -274,7 +260,6 @@
   </div>
 
   <script>
-    // === SMART STATE MANAGEMENT (Умное состояние) ===
     const App = {
       key: 'mosque_app_session',
       role: null,
@@ -284,19 +269,15 @@
         this.role = saved || null;
 
         if (!this.role) {
-          // Первый раз: показываем выбор
           document.getElementById('role-selector').classList.remove('hidden');
           document.getElementById('app-interface').classList.add('hidden');
         } else {
-          // Уже выбрана роль: загружаем интерфейс
           document.getElementById('role-selector').classList.add('hidden');
           document.getElementById('app-interface').classList.remove('hidden');
           
-          // Если админ — перенаправляем в админку (админка лежит в папке admin)
           if (this.role === 'admin') {
             window.location.href = 'admin/index.html';
           } else {
-            // Если прихожанин — запускаем приложение
             document.getElementById('user-role-display').textContent = 'Режим прихожанина';
             render();
             updateContacts();
@@ -316,10 +297,8 @@
       }
     };
 
-    // Запуск при загрузке
     App.init();
 
-    // === TABS ===
     function tab(id, btn) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -327,7 +306,6 @@
       btn.classList.add('active');
     }
 
-    // === TOAST ===
     function toast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -335,19 +313,16 @@
       setTimeout(() => t.classList.remove('show'), 2500);
     }
 
-    // === AID TOGGLE ===
     function aidToggle(type) {
       document.getElementById('aid-req').classList.toggle('hidden', type !== 'req');
       document.getElementById('aid-off').classList.toggle('hidden', type !== 'off');
     }
 
-    // === DB LAYER (localStorage) ===
     const DB = {
       get: k => JSON.parse(localStorage.getItem(`mf_${k}`) || '[]'),
       set: (k, v) => { localStorage.setItem(`mf_${k}`, JSON.stringify(v)); render(); }
     };
 
-    // === FORM SUBMIT ===
     function sub(e, key) {
       e.preventDefault();
       const form = e.target;
@@ -363,7 +338,6 @@
       toast('✅ Заявка отправлена!');
     }
 
-    // === CONTACTS ===
     function updateContacts() {
       const name = localStorage.getItem('mf_mosque_name') || 'Центральная мечеть';
       const addr = localStorage.getItem('mf_mosque_address') || 'Адрес не указан';
@@ -380,7 +354,6 @@
       }
     }
 
-    // === RENDER ===
     function render() {
       const ann = DB.get('announcements');
       document.getElementById('ann-list').innerHTML = ann.length 
@@ -420,7 +393,6 @@
       return div.innerHTML;
     }
 
-    // === PWA INSTALL PROMPT ===
     let deferredPrompt;
     const installPrompt = document.getElementById('install-prompt');
     const installBtn = document.getElementById('install-btn');
@@ -445,10 +417,38 @@
       installPrompt.classList.remove('show');
     });
 
-    // === PRAYER TIMES MODULE (Встроенный для простоты) ===
+    // === PRAYER TIMES — УСТОЙЧИВЫЙ К ПРОБЕЛАМ ===
     const PrayerTimes = {
       apiUrl: 'https://raw.githubusercontent.com/daniilnizamov7-star/Namaz/main/api/prayer-data.json',
-      cacheKey: 'prayer_cache_v1',
+      cacheKey: 'prayer_cache_v3',
+
+      cleanJSON(str) {
+        // Удаляем все пробелы вокруг ключей и значений в JSON строке
+        return str.replace(/"\s*:\s*"/g, '":"')
+                  .replace(/"\s*,\s*"/g, '","')
+                  .replace(/"\s*}/g, '"}')
+                  .replace(/"\s*]/g, '"]')
+                  .replace(/{\s*"/g, '{"')
+                  .replace(/\[\s*"/g, '["')
+                  .replace(/"\s+$/gm, '"')
+                  .replace(/^\s+"/gm, '"');
+      },
+
+      cleanData(data) {
+        const cleanSchedule = (data.schedule || []).map(item => {
+          const cleanItem = {};
+          for (const [key, value] of Object.entries(item)) {
+            const cleanKey = key.trim();
+            const cleanValue = typeof value === 'string' ? value.trim() : value;
+            cleanItem[cleanKey] = cleanValue;
+          }
+          return cleanItem;
+        });
+        return { 
+          monthName: (data.monthName || '').trim(),
+          schedule: cleanSchedule 
+        };
+      },
 
       getToday(data) {
         const today = new Date();
@@ -456,47 +456,81 @@
         const monthNames = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
         const todayStr = `${currentDay} ${monthNames[today.getMonth()]}`;
         
-        const entry = data.schedule?.find(item => item.date?.trim() === todayStr);
-        return entry || data.schedule?.[0];
+        console.log(`🔍 Ищем дату: "${todayStr}"`);
+        console.log('Доступные даты:', data.schedule.map(s => s.date));
+
+        const entry = data.schedule?.find(item => {
+          const itemDate = (item.date || '').trim();
+          return itemDate === todayStr;
+        });
+        
+        if (entry) {
+          console.log(`✅ Найдено:`, entry);
+          return entry;
+        }
+
+        const fallback = data.schedule?.find(item => item.d === currentDay);
+        if (fallback) {
+           console.warn(`⚠️ По дате не нашли, взяли по номеру d=${currentDay}`);
+           return fallback;
+        }
+
+        console.warn('⚠️ День не найден');
+        return data.schedule?.[0] || null;
       },
 
       renderUI(times) {
-        if (!times) return;
-        const elements = {
-          'fajr-time': times.fajr?.trim(),
-          'dhuhr-time': times.dhuhr?.trim(),
-          'asr-time': times.asr?.trim(),
-          'maghrib-time': times.maghrib?.trim(),
-          'isha-time': times.isha?.trim()
-        };
-
-        for (const [id, time] of Object.entries(elements)) {
-          const el = document.getElementById(id);
-          if (el && time) {
-            el.style.transition = 'opacity 0.2s';
-            el.style.opacity = '0';
-            setTimeout(() => { el.textContent = time; el.style.opacity = '1'; }, 100);
-          }
+        if (!times) {
+          console.error('❌ Нет данных для отображения');
+          return;
         }
+        
+        const mapping = [
+          { id: 'fajr-time', key: 'fajr' },
+          { id: 'dhuhr-time', key: 'dhuhr' },
+          { id: 'asr-time', key: 'asr' },
+          { id: 'maghrib-time', key: 'maghrib' },
+          { id: 'isha-time', key: 'isha' }
+        ];
+
+        mapping.forEach(map => {
+          const el = document.getElementById(map.id);
+          const val = times[map.key];
+          if (el && val) {
+            el.style.opacity = '0';
+            setTimeout(() => {
+              el.textContent = val; 
+              el.style.opacity = '1';
+            }, 150);
+          } else {
+            console.warn(`⚠️ Не найдено: ${map.id} = ${val}`);
+          }
+        });
+
         this.highlightNext(times);
       },
 
       highlightNext(times) {
         const now = new Date();
         const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        
         const prayers = [
-          { id: 'fajr-time', time: times.fajr?.trim() },
-          { id: 'dhuhr-time', time: times.dhuhr?.trim() },
-          { id: 'asr-time', time: times.asr?.trim() },
-          { id: 'maghrib-time', time: times.maghrib?.trim() },
-          { id: 'isha-time', time: times.isha?.trim() }
+          { id: 'fajr-time', key: 'fajr' },
+          { id: 'dhuhr-time', key: 'dhuhr' },
+          { id: 'asr-time', key: 'asr' },
+          { id: 'maghrib-time', key: 'maghrib' },
+          { id: 'isha-time', key: 'isha' }
         ];
 
         document.querySelectorAll('.prayer-time').forEach(el => el.classList.remove('next-prayer'));
 
         for (const p of prayers) {
-          if (!p.time) continue;
-          const [h, m] = p.time.split(':').map(Number);
+          const timeStr = times[p.key];
+          if (!timeStr) continue;
+          
+          const [h, m] = timeStr.split(':').map(Number);
+          if (isNaN(h)) continue;
+
           if (h * 60 + m > nowMinutes) {
             const el = document.getElementById(p.id);
             if (el) el.classList.add('next-prayer');
@@ -505,23 +539,51 @@
         }
       },
 
-      init() {
-        const cached = localStorage.getItem(this.cacheKey);
-        if (cached) {
-          const { date, data } = JSON.parse(cached);
-          if (date === new Date().toDateString()) this.renderUI(data);
+      async init() {
+        try {
+          console.log('📡 Загрузка расписания...');
+          const response = await fetch(`${this.apiUrl}?v=${Date.now()}`);
+          
+          if (!response.ok) throw new Error('Ошибка сети');
+          
+          const rawText = await response.text();
+          console.log('📄 Получен JSON:', rawText.substring(0, 100) + '...');
+          
+          // Очищаем от пробелов перед парсингом
+          const cleanText = this.cleanJSON(rawText);
+          const rawData = JSON.parse(cleanText);
+          
+          const cleanData = this.cleanData(rawData);
+          console.log('✅ Очищенные данные:', cleanData);
+          
+          const today = this.getToday(cleanData);
+          
+          if (today) {
+            localStorage.setItem(this.cacheKey, JSON.stringify({ 
+              date: new Date().toDateString(), 
+              data: today 
+            }));
+            this.renderUI(today);
+          } else {
+            this.loadFromCache();
+          }
+        } catch (e) {
+          console.error('❌ Ошибка загрузки:', e);
+          this.loadFromCache();
         }
+      },
 
-        fetch(this.apiUrl + '?t=' + Date.now())
-          .then(r => r.json())
-          .then(data => {
-            const today = this.getToday(data);
-            if (today) {
-              localStorage.setItem(this.cacheKey, JSON.stringify({ date: new Date().toDateString(), data: today }));
-              this.renderUI(today);
+      loadFromCache() {
+        try {
+          const cached = localStorage.getItem(this.cacheKey);
+          if (cached) {
+            const { date, data } = JSON.parse(cached);
+            if (date === new Date().toDateString()) {
+              console.log('♻️ Загружено из кэша');
+              this.renderUI(data);
             }
-          })
-          .catch(() => console.log('Offline mode'));
+          }
+        } catch (e) { /* ignore */ }
       }
     };
 
