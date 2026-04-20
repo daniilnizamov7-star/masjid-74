@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MasjidFlow — Админ-панель</title>
+  <meta name="theme-color" content="#1E5631">
+  <title>⚙️ MasjidFlow — Админ-панель</title>
+  
+  <!-- PWA Manifest для админа -->
+  <link rel="manifest" href="manifest-admin.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
   <style>
     :root {
       --p: #1E5631; --pd: #133A20; --a: #D4AF37;
@@ -76,12 +82,17 @@
     <ul class="nav">
       <li><button class="active" onclick="tab('dash', this)"><i>📊</i> Обзор</button></li>
       <li><button onclick="tab('imp', this)"><i>📢</i> Важное</button></li>
+      <!-- 🔹 ХУТБА ДОБАВЛЕНА -->
+      <li><button onclick="tab('khutbah', this)"><i>📖</i> Хутба</button></li>
       <li><button onclick="tab('sched', this)"><i>🕌</i> Расписание</button></li>
-      <li><button onclick="tab('ift', this)"><i>🍽️</i> Ифтар</button></li>
-      <li><button onclick="tab('ms', this)"><i>🤝</i> Мастера (Приват)</button></li>
+      <!-- 🔹 ИФТАР СКРЫТ ДО РАМАДАНА -->
+      <!-- <li><button onclick="tab('ift', this)" disabled style="opacity:0.5; cursor:not-allowed;"><i>🍽️</i> Ифтар</button></li> -->
+      <!-- 🔹 "Мастера (Приват)" → "Волонтёры" -->
+      <li><button onclick="tab('ms', this)"><i>🤝</i> Волонтёры</button></li>
       <li><button onclick="tab('aid', this)"><i>🤲</i> Благотворительность</button></li>
       <li><button onclick="tab('don', this)"><i>💰</i> Пожертвования</button></li>
-      <li><button onclick="tab('nik', this)"><i>💍</i> Никахи</button></li>
+      <!-- 🔹 НИКАХ УБРАН ИЗ НАВИГАЦИИ (остался в БД для обработки) -->
+      <!-- <li><button onclick="tab('nik', this)"><i>💍</i> Никахи</button></li> -->
       <li><button onclick="tab('settings', this)"><i>⚙️</i> Настройки</button></li>
     </ul>
   </aside>
@@ -112,7 +123,20 @@
       </div>
     </section>
 
-    <!-- 3. РАСПИСАНИЕ (ФОТО + УРОКИ) -->
+    <!-- 🔹 3. ПЯТНИЧНАЯ ХУТБА (НОВОЕ) -->
+    <section id="khutbah" class="sec">
+      <div class="wrap">
+        <div class="head">
+          <h3>📖 Пятничная хутба</h3>
+          <button class="btn btn-p" onclick="openM('m-khutbah')">✏️ Редактировать</button>
+        </div>
+        <div id="khutbah-admin-view" style="padding:15px; background:#F8F9FA; border-radius:8px;">
+          <p style="color:var(--tl);">Тема проповеди будет показана прихожанам в пятницу</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. РАСПИСАНИЕ (ФОТО + УРОКИ) -->
     <section id="sched" class="sec">
       <div class="wrap">
         <div class="head"><h3>🕌 Фото расписания намазов</h3></div>
@@ -131,7 +155,7 @@
       </div>
     </section>
 
-    <!-- 4. ИФТАР -->
+    <!-- 5. ИФТАР (скрыт, но функционал сохранён) -->
     <section id="ift" class="sec">
       <div class="wrap">
         <div class="head"><h3>🍽️ Записи на Ифтар</h3><button class="btn btn-d" onclick="clear('mf_iftar')">🗑 Очистить</button></div>
@@ -139,15 +163,15 @@
       </div>
     </section>
 
-    <!-- 5. МАСТЕРА -->
+    <!-- 🔹 6. ВОЛОНТЁРЫ (бывшие "Мастера") -->
     <section id="ms" class="sec">
       <div class="wrap">
-        <div class="head"><h3>🤝 Мастера общины (Только для Админа)</h3><button class="btn btn-d" onclick="clear('mf_masters')">🗑 Очистить</button></div>
+        <div class="head"><h3>🤝 Волонтёры общины</h3><button class="btn btn-d" onclick="clear('mf_masters')">🗑 Очистить</button></div>
         <table><thead><tr><th>Профессия</th><th>ФИО</th><th>Навыки</th><th>Телефон</th></tr></thead><tbody id="t-ms"></tbody></table>
       </div>
     </section>
 
-    <!-- 6. БЛАГОТВОРИТЕЛЬНОСТЬ -->
+    <!-- 7. БЛАГОТВОРИТЕЛЬНОСТЬ -->
     <section id="aid" class="sec">
       <div class="wrap">
         <div class="head"><h3>🤲 Запросы и Предложения</h3><button class="btn btn-d" onclick="clear('mf_aid')">🗑 Очистить</button></div>
@@ -155,7 +179,7 @@
       </div>
     </section>
 
-    <!-- 7. ПОЖЕРТВОВАНИЯ -->
+    <!-- 8. ПОЖЕРТВОВАНИЯ -->
     <section id="don" class="sec">
       <div class="wrap">
         <div class="head"><h3>💰 Садака / Закят</h3><button class="btn btn-d" onclick="clear('mf_donations')">🗑 Очистить</button></div>
@@ -163,15 +187,15 @@
       </div>
     </section>
 
-    <!-- 8. НИКАХИ -->
+    <!-- 9. НИКАХИ (скрыт из навигации, но доступен для обработки) -->
     <section id="nik" class="sec">
       <div class="wrap">
-        <div class="head"><h3>💍 Заявки на Никах</h3></div>
+        <div class="head"><h3>💍 Заявки на Никах (только для имама)</h3></div>
         <table><thead><tr><th>Пара</th><th>Дата</th><th>Телефон</th><th>Статус</th></tr></thead><tbody id="t-nik"></tbody></table>
       </div>
     </section>
 
-    <!-- 9. НАСТРОЙКИ -->
+    <!-- 10. НАСТРОЙКИ -->
     <section id="settings" class="sec">
       <div class="wrap" style="max-width:600px;">
         <div class="head"><h3>⚙️ Настройки мечети</h3></div>
@@ -213,6 +237,32 @@
         </div>
         <div class="fg"><label>Время начала</label><input type="time" id="l-time" class="fc" required></div>
         <button class="btn btn-p" style="width:100%;">Сохранить урок</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 🔹 Modal: Khutbah -->
+  <div id="m-khutbah" class="modal">
+    <div class="modal-c">
+      <button class="modal-x" onclick="closeM('m-khutbah')">&times;</button>
+      <h2>📖 Тема пятничной хутбы</h2>
+      <form onsubmit="saveKhutbah(event)">
+        <div class="fg">
+          <label>Тема проповеди *</label>
+          <input type="text" id="kh-topic" class="fc" placeholder="Например: Благонравие в семье" required>
+        </div>
+        <div class="fg">
+          <label>Имам (необязательно)</label>
+          <input type="text" id="kh-imam" class="fc" placeholder="Имя имама">
+        </div>
+        <div class="fg">
+          <label>Дата публикации</label>
+          <input type="date" id="kh-date" class="fc" required>
+        </div>
+        <button class="btn btn-p" style="width:100%;">💾 Опубликовать</button>
+        <p style="font-size:12px; color:var(--tl); margin-top:10px;">
+          Тема появится на сайте в пятницу утром. Можно запланировать заранее.
+        </p>
       </form>
     </div>
   </div>
@@ -289,6 +339,44 @@
       render();
     }
 
+    // === KHUTBAH ===
+    function loadKhutbah() {
+      const data = JSON.parse(localStorage.getItem('mf_khutbah') || 'null');
+      if (data) {
+        document.getElementById('khutbah-admin-view').innerHTML = 
+          `<p><strong>📖 Тема:</strong> ${escapeHtml(data.topic)}</p>` +
+          (data.imam ? `<p>👤 Имам: ${escapeHtml(data.imam)}</p>` : '') +
+          `<p style="color:var(--tl); font-size:13px;">📅 ${fmt(data.date)}</p>` +
+          `<button class="btn btn-p" style="margin-top:10px;" onclick="openM('m-khutbah')">✏️ Изменить</button>`;
+      }
+    }
+    function saveKhutbah(e) {
+      e.preventDefault();
+      const data = {
+        topic: document.getElementById('kh-topic').value,
+        imam: document.getElementById('kh-imam').value,
+        date: document.getElementById('kh-date').value,
+        updated: new Date().toISOString()
+      };
+      localStorage.setItem('mf_khutbah', JSON.stringify(data));
+      closeM('m-khutbah');
+      loadKhutbah();
+      render();
+      toast('✅ Тема хутбы опубликована');
+    }
+    function toast(msg) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:white;padding:12px 20px;border-radius:50px;font-size:14px;z-index:2000;animation:slideIn 0.3s ease';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    }
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
     // === RENDER ===
     function render() {
       const don = DB.get('mf_donations'), nik = DB.get('mf_nikahs'), ift = DB.get('mf_iftar'), aid = DB.get('mf_aid'), ms = DB.get('mf_masters');
@@ -298,7 +386,7 @@
       document.getElementById('s-ift').textContent = ift.length;
       document.getElementById('s-aid').textContent = aid.length;
 
-      const log = [...don.map(x=>({t:`Садака: ${x.name}`, d:x.dateAdded})), ...nik.map(x=>({t:`Никах: ${x.groom}`, d:x.dateAdded})), ...ms.map(x=>({t:`Мастер: ${x.name}`, d:x.dateAdded}))]
+      const log = [...don.map(x=>({t:`Садака: ${x.name}`, d:x.dateAdded})), ...nik.map(x=>({t:`Никах: ${x.groom}`, d:x.dateAdded})), ...ms.map(x=>({t:`Волонтёр: ${x.name}`, d:x.dateAdded}))]
         .sort((a,b)=>new Date(b.d)-new Date(a.d)).slice(0,4);
       document.getElementById('log').innerHTML = log.length ? log.map(l=>`<div style="padding:6px 0; border-bottom:1px solid #eee;">🕒 ${fmt(l.d)}: ${l.t}</div>`).join('') : 'Пока нет действий';
 
@@ -318,8 +406,8 @@
       const ann = DB.get('mf_announcements');
       document.getElementById('ann-list').innerHTML = ann.map(a=>`
         <div style="background:#fff; padding:12px; border-radius:8px; border-left:4px solid ${a.urgent?'red':'gold'};">
-          <b>${a.urgent?'🔥 ':''}${a.title}</b>
-          <p style="font-size:13px; margin:4px 0;">${a.text}</p>
+          <b>${a.urgent?'🔥 ':''}${escapeHtml(a.title)}</b>
+          <p style="font-size:13px; margin:4px 0;">${escapeHtml(a.text)}</p>
           <button onclick="del('mf_announcements',${a.id})" style="background:none; border:none; color:red; cursor:pointer; font-size:12px;">Удалить</button>
         </div>
       `).join('');
@@ -350,7 +438,16 @@
     function closeM(id) { document.getElementById(id).classList.remove('open'); }
 
     window.addEventListener('storage', render);
-    document.addEventListener('DOMContentLoaded', () => { render(); loadSettings(); });
+    document.addEventListener('DOMContentLoaded', () => { 
+      render(); 
+      loadSettings(); 
+      loadKhutbah(); // 🔹 Загружаем хутбу при старте
+    });
+
+    // === SERVICE WORKER (PWA) ===
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw-admin.js').catch(err => console.log('SW registration failed:', err));
+    }
   </script>
 </body>
 </html>
