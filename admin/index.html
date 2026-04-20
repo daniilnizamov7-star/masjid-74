@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#1E5631">
   <title>⚙️ MasjidFlow — Админ-панель</title>
   
-  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   
@@ -67,39 +66,11 @@
     .upload-area input { display: none; }
     .preview-img { max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 15px; box-shadow: var(--sh); }
 
-    /* 🔹 Стили для расписания намазов (как у прихожанина) */
-    .prayer-card {
-      border: 2px solid var(--a);
-      background: #FFFBF0;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .prayer-card h3 {
-      color: #8B7500;
-      margin-bottom: 15px;
-    }
-    .prayer-times-grid {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin: 15px 0;
-      font-weight: 600;
-      color: var(--p);
-      flex-wrap: wrap;
-    }
-    .prayer-time {
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-    }
-    .prayer-time.next-prayer {
-      background: var(--a);
-      color: #111;
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(212,175,55,0.4);
-    }
+    .prayer-card { border: 2px solid var(--a); background: #FFFBF0; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+    .prayer-card h3 { color: #8B7500; margin-bottom: 15px; }
+    .prayer-times-grid { display: flex; justify-content: center; gap: 16px; margin: 15px 0; font-weight: 600; color: var(--p); flex-wrap: wrap; }
+    .prayer-time { padding: 4px 8px; border-radius: 6px; transition: all 0.3s ease; }
+    .prayer-time.next-prayer { background: var(--a); color: #111; font-weight: 700; box-shadow: 0 2px 8px rgba(212,175,55,0.4); }
 
     @media (max-width: 768px) {
       .side { transform: translateX(-100%); }
@@ -118,11 +89,10 @@
       <li><button onclick="tab('imp', this)"><i>📢</i> Важное</button></li>
       <li><button onclick="tab('khutbah', this)"><i>📖</i> Хутба</button></li>
       <li><button onclick="tab('sched', this)"><i>📚</i> Уроки</button></li>
-      <!-- 🔹 Ифтар скрыт до Рамадана -->
       <!-- <li><button onclick="tab('ift', this)" disabled style="opacity:0.5; cursor:not-allowed;"><i>🍽️</i> Ифтар</button></li> -->
       <li><button onclick="tab('ms', this)"><i>🤝</i> Волонтёры</button></li>
       <li><button onclick="tab('aid', this)"><i>🤲</i> Благотворительность</button></li>
-      <li><button onclick="tab('don', this)"><i>💰</i> Пожертвования</button></li>
+      <!-- 🔹 ПОЖЕРТВОВАНИЯ УБРАНЫ -->
       <li><button onclick="tab('settings', this)"><i>⚙️</i> Настройки</button></li>
     </ul>
   </aside>
@@ -134,9 +104,8 @@
       <div style="font-weight:600;">Имам</div>
     </div>
 
-    <!-- 🔹 1. DASHBOARD — С РАСПИСАНИЕМ НАМАЗОВ -->
+    <!-- 1. DASHBOARD -->
     <section id="dash" class="sec active">
-      <!-- Расписание намазов (как у прихожанина) -->
       <div class="prayer-card">
         <h3>🕋 Время намазов на сегодня</h3>
         <div class="prayer-times-grid">
@@ -150,14 +119,10 @@
           <span style="opacity:0.5">•</span>
           <span class="prayer-time">Иша <span id="isha-time">--:--</span></span>
         </div>
-        <p style="font-size:12px; color:var(--tl); margin-top:10px;">
-          Автоматически с Namaz Chelyabinsk
-        </p>
+        <p style="font-size:12px; color:var(--tl); margin-top:10px;">Автоматически с Namaz Chelyabinsk</p>
       </div>
 
-      <!-- Статистика -->
       <div class="grid">
-        <div class="stat"><h3>Пожертвования</h3><div class="val" id="s-don">0</div></div>
         <div class="stat"><h3>Заявки Никах</h3><div class="val" id="s-nik">0</div></div>
         <div class="stat"><h3>Записи Ифтар</h3><div class="val" id="s-ift">0</div></div>
         <div class="stat"><h3>Запросы помощи</h3><div class="val" id="s-aid">0</div></div>
@@ -177,17 +142,14 @@
     <!-- 3. ХУТБА -->
     <section id="khutbah" class="sec">
       <div class="wrap">
-        <div class="head">
-          <h3>📖 Пятничная хутба</h3>
-          <button class="btn btn-p" onclick="openM('m-khutbah')">✏️ Редактировать</button>
-        </div>
+        <div class="head"><h3>📖 Пятничная хутба</h3><button class="btn btn-p" onclick="openM('m-khutbah')">✏️ Редактировать</button></div>
         <div id="khutbah-admin-view" style="padding:15px; background:#F8F9FA; border-radius:8px;">
           <p style="color:var(--tl);">Тема проповеди будет показана прихожанам в пятницу</p>
         </div>
       </div>
     </section>
 
-    <!-- 🔹 4. РАСПИСАНИЕ — ТОЛЬКО УРОКИ -->
+    <!-- 4. УРОКИ -->
     <section id="sched" class="sec">
       <div class="wrap">
         <div class="head"><h3>📚 Расписание уроков</h3><button class="btn btn-p" onclick="openM('m-lesson')">➕ Добавить урок</button></div>
@@ -219,15 +181,7 @@
       </div>
     </section>
 
-    <!-- 8. ПОЖЕРТВОВАНИЯ -->
-    <section id="don" class="sec">
-      <div class="wrap">
-        <div class="head"><h3>💰 Садака / Закят</h3><button class="btn btn-d" onclick="clear('mf_donations')">🗑 Очистить</button></div>
-        <table><thead><tr><th>Дата</th><th>ФИО</th><th>Сумма</th><th>Тип</th></tr></thead><tbody id="t-don"></tbody></table>
-      </div>
-    </section>
-
-    <!-- 9. НАСТРОЙКИ -->
+    <!-- 8. НАСТРОЙКИ -->
     <section id="settings" class="sec">
       <div class="wrap" style="max-width:600px;">
         <div class="head"><h3>⚙️ Настройки мечети</h3></div>
@@ -235,7 +189,6 @@
         <div class="fg"><label>Адрес</label><input type="text" id="set-addr" class="fc" placeholder="г. Челябинск, ул. Примерная, 1"></div>
         <div class="fg"><label>Телефон для связи</label><input type="tel" id="set-phone" class="fc" placeholder="+7 (999) 123-45-67"></div>
         <button class="btn btn-p" style="width:100%; margin-top:10px;" onclick="saveSettings()">💾 Сохранить контакты</button>
-        <p style="margin-top:10px; font-size:12px; color:var(--tl);">Изменения сразу отобразятся на сайте прихожан.</p>
       </div>
     </section>
   </main>
@@ -248,7 +201,7 @@
       <form onsubmit="saveAnn(event)">
         <div class="fg"><label>Заголовок</label><input type="text" id="ann-t" class="fc" required></div>
         <div class="fg"><label>Текст</label><textarea id="ann-b" class="fc" rows="3" required></textarea></div>
-        <label style="display:flex; gap:10px; align-items:center; margin-bottom:15px;"><input type="checkbox" id="ann-u"> 🔥 Отметить как СРОЧНО</label>
+        <label style="display:flex; gap:10px; align-items:center; margin-bottom:15px;"><input type="checkbox" id="ann-u"> 🔥 СРОЧНО</label>
         <button class="btn btn-p" style="width:100%;">Опубликовать</button>
       </form>
     </div>
@@ -260,15 +213,15 @@
       <button class="modal-x" onclick="closeM('m-lesson')">&times;</button>
       <h2>Добавить урок</h2>
       <form onsubmit="saveLesson(event)">
-        <div class="fg"><label>Название урока</label><input type="text" id="l-title" class="fc" placeholder="Например: Основы Фикха" required></div>
-        <div class="fg"><label>Имя учителя</label><input type="text" id="l-teacher" class="fc" placeholder="Брат Ахмед" required></div>
+        <div class="fg"><label>Название урока</label><input type="text" id="l-title" class="fc" required></div>
+        <div class="fg"><label>Имя учителя</label><input type="text" id="l-teacher" class="fc" required></div>
         <div class="fg"><label>День недели</label>
           <select id="l-day" class="fc">
             <option>Понедельник</option><option>Вторник</option><option>Среда</option><option>Четверг</option><option>Пятница</option><option>Суббота</option><option>Воскресенье</option>
           </select>
         </div>
-        <div class="fg"><label>Время начала</label><input type="time" id="l-time" class="fc" required></div>
-        <button class="btn btn-p" style="width:100%;">Сохранить урок</button>
+        <div class="fg"><label>Время</label><input type="time" id="l-time" class="fc" required></div>
+        <button class="btn btn-p" style="width:100%;">Сохранить</button>
       </form>
     </div>
   </div>
@@ -277,30 +230,17 @@
   <div id="m-khutbah" class="modal">
     <div class="modal-c">
       <button class="modal-x" onclick="closeM('m-khutbah')">&times;</button>
-      <h2>📖 Тема пятничной хутбы</h2>
+      <h2>📖 Тема хутбы</h2>
       <form onsubmit="saveKhutbah(event)">
-        <div class="fg">
-          <label>Тема проповеди *</label>
-          <input type="text" id="kh-topic" class="fc" placeholder="Например: Благонравие в семье" required>
-        </div>
-        <div class="fg">
-          <label>Имам (необязательно)</label>
-          <input type="text" id="kh-imam" class="fc" placeholder="Имя имама">
-        </div>
-        <div class="fg">
-          <label>Дата публикации</label>
-          <input type="date" id="kh-date" class="fc" required>
-        </div>
-        <button class="btn btn-p" style="width:100%;">💾 Опубликовать</button>
-        <p style="font-size:12px; color:var(--tl); margin-top:10px;">
-          Тема появится на сайте в пятницу утром. Можно запланировать заранее.
-        </p>
+        <div class="fg"><label>Тема *</label><input type="text" id="kh-topic" class="fc" required></div>
+        <div class="fg"><label>Имам</label><input type="text" id="kh-imam" class="fc"></div>
+        <div class="fg"><label>Дата</label><input type="date" id="kh-date" class="fc" required></div>
+        <button class="btn btn-p" style="width:100%;">Опубликовать</button>
       </form>
     </div>
   </div>
 
   <script>
-    // === NAV ===
     function tab(id, btn) {
       document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -310,14 +250,12 @@
       document.getElementById('side').classList.remove('open');
     }
 
-    // === DB ===
     const DB = {
       get: k => JSON.parse(localStorage.getItem(k) || '[]'),
       set: (k, v) => { localStorage.setItem(k, JSON.stringify(v)); render(); }
     };
     const fmt = d => new Date(d).toLocaleDateString('ru-RU');
 
-    // === SETTINGS ===
     function loadSettings() {
       document.getElementById('set-name').value = localStorage.getItem('mf_mosque_name') || '';
       document.getElementById('set-addr').value = localStorage.getItem('mf_mosque_address') || '';
@@ -327,11 +265,10 @@
       localStorage.setItem('mf_mosque_name', document.getElementById('set-name').value);
       localStorage.setItem('mf_mosque_address', document.getElementById('set-addr').value);
       localStorage.setItem('mf_mosque_phone', document.getElementById('set-phone').value);
-      alert('✅ Контакты сохранены! Они мгновенно обновятся на сайте.');
+      alert('✅ Контакты сохранены!');
       render();
     }
 
-    // === KHUTBAH ===
     function loadKhutbah() {
       const data = JSON.parse(localStorage.getItem('mf_khutbah') || 'null');
       if (data) {
@@ -344,74 +281,45 @@
     }
     function saveKhutbah(e) {
       e.preventDefault();
-      const data = {
+      localStorage.setItem('mf_khutbah', JSON.stringify({
         topic: document.getElementById('kh-topic').value,
         imam: document.getElementById('kh-imam').value,
-        date: document.getElementById('kh-date').value,
-        updated: new Date().toISOString()
-      };
-      localStorage.setItem('mf_khutbah', JSON.stringify(data));
-      closeM('m-khutbah');
-      loadKhutbah();
-      render();
-      toast('✅ Тема хутбы опубликована');
+        date: document.getElementById('kh-date').value
+      }));
+      closeM('m-khutbah'); loadKhutbah(); render();
     }
-    function toast(msg) {
-      const t = document.createElement('div');
-      t.textContent = msg;
-      t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:white;padding:12px 20px;border-radius:50px;font-size:14px;z-index:2000;animation:slideIn 0.3s ease';
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 2500);
-    }
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
+    function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 
-    // === LESSONS ===
     function saveLesson(e) {
       e.preventDefault();
-      const lesson = {
-        id: Date.now(),
-        title: document.getElementById('l-title').value,
-        teacher: document.getElementById('l-teacher').value,
-        day: document.getElementById('l-day').value,
-        time: document.getElementById('l-time').value
-      };
       const arr = DB.get('mf_lessons');
-      arr.push(lesson);
+      arr.push({ id: Date.now(), title: document.getElementById('l-title').value, teacher: document.getElementById('l-teacher').value, day: document.getElementById('l-day').value, time: document.getElementById('l-time').value });
       DB.set('mf_lessons', arr);
-      closeM('m-lesson');
-      e.target.reset();
+      closeM('m-lesson'); e.target.reset();
     }
 
-    // === RENDER ===
+    // === RENDER (ЧИСТЫЙ, БЕЗ ПОЖЕРТВОВАНИЙ) ===
     function render() {
-      const don = DB.get('mf_donations'), nik = DB.get('mf_nikahs'), ift = DB.get('mf_iftar'), aid = DB.get('mf_aid'), ms = DB.get('mf_masters');
+      const nik = DB.get('mf_nikahs'), ift = DB.get('mf_iftar'), aid = DB.get('mf_aid'), ms = DB.get('mf_masters');
       
-      document.getElementById('s-don').textContent = don.length;
       document.getElementById('s-nik').textContent = nik.length;
       document.getElementById('s-ift').textContent = ift.length;
       document.getElementById('s-aid').textContent = aid.length;
 
-      const log = [...don.map(x=>({t:`Садака: ${x.name}`, d:x.dateAdded})), ...nik.map(x=>({t:`Никах: ${x.groom}`, d:x.dateAdded})), ...ms.map(x=>({t:`Волонтёр: ${x.name}`, d:x.dateAdded}))]
+      const log = [...nik.map(x=>({t:`Никах: ${x.groom}`, d:x.dateAdded})), ...ms.map(x=>({t:`Волонтёр: ${x.name}`, d:x.dateAdded}))]
         .sort((a,b)=>new Date(b.d)-new Date(a.d)).slice(0,4);
       document.getElementById('log').innerHTML = log.length ? log.map(l=>`<div style="padding:6px 0; border-bottom:1px solid #eee;">🕒 ${fmt(l.d)}: ${l.t}</div>`).join('') : 'Пока нет действий';
 
-      renderT('t-don', don, d=>`<td>${fmt(d.dateAdded)}</td><td>${d.name}</td><td style="font-weight:bold; color:var(--p)">${d.amount}₽</td><td>${d.type}</td>`);
       renderT('t-nik', nik, d=>`<td>${d.groom} & ${d.bride}</td><td>${d.date}</td><td>${d.phone}</td><td><span class="badge b-n">${d.status||'Новая'}</span></td>`);
       renderT('t-ift', ift, d=>`<td>${d.date}</td><td>${d.name}</td><td>${d.phone}</td><td><b>${d.count}</b></td>`);
       renderT('t-ms', ms, d=>`<td><span class="badge b-n">${d.prof}</span></td><td>${d.name}</td><td>${d.skills||'—'}</td><td><a href="tel:${d.phone}">${d.phone}</a></td>`);
-      renderT('t-aid', aid, d=>`<td><span class="badge ${d.type==='request'?'b-r':'b-o'}">${d.type==='request'?'🆘 Нужна':'❤️ Дать'}</span></td><td>${d.desc}</td><td>${d.status||'Новый'}</td><td>${d.phone||'—'}</td>`);
+      renderT('t-aid', aid, d=>`<td><span class="badge ${d.type==='request'?'b-r':'b-o'}">${d.type==='request'?'🆘':'❤️'}</span></td><td>${d.desc}</td><td>${d.status||'Новый'}</td><td>${d.phone||'—'}</td>`);
 
-      // Lessons
       const lessons = DB.get('mf_lessons');
       document.getElementById('t-lessons').innerHTML = lessons.length 
-        ? lessons.map(l=>`<tr><td><b>${l.time}</b></td><td>${l.title}</td><td><span class="badge b-day">${l.day}</span></td><td>${l.teacher}</td><td><button class="btn btn-d btn-s" onclick="del('mf_lessons',${l.id})">🗑</button></td></tr>`).join('')
+        ? lessons.map(l=>`<tr><td><b>${l.time}</b></td><td>${l.title}</td><td><span class="badge b-day">${l.day}</span></td><td>${l.teacher}</td><td><button class="btn btn-d" onclick="del('mf_lessons',${l.id})">🗑</button></td></tr>`).join('')
         : '<tr><td colspan="5" style="text-align:center; padding:20px; color:#999;">Нет уроков</td></tr>';
 
-      // Announcements
       const ann = DB.get('mf_announcements');
       document.getElementById('ann-list').innerHTML = ann.map(a=>`
         <div style="background:#fff; padding:12px; border-radius:8px; border-left:4px solid ${a.urgent?'red':'gold'};">
@@ -419,40 +327,29 @@
           <p style="font-size:13px; margin:4px 0;">${escapeHtml(a.text)}</p>
           <button onclick="del('mf_announcements',${a.id})" style="background:none; border:none; color:red; cursor:pointer; font-size:12px;">Удалить</button>
         </div>
-      `).join('');
+      `).join('') || '<p style="color:var(--tl); text-align:center;">Нет объявлений</p>';
     }
 
     function renderT(id, data, tpl) {
       document.getElementById(id).innerHTML = data.length ? data.map(d=>`<tr>${tpl(d)}</tr>`).join('') : '<tr><td colspan="5" style="text-align:center; padding:20px; color:#999;">Пусто</td></tr>';
     }
-
     function saveAnn(e) {
       e.preventDefault();
       const arr = DB.get('mf_announcements');
       arr.unshift({id:Date.now(), title:document.getElementById('ann-t').value, text:document.getElementById('ann-b').value, urgent:document.getElementById('ann-u').checked, dateAdded:new Date().toISOString()});
-      DB.set('mf_announcements', arr);
-      closeM('m-imp'); e.target.reset();
+      DB.set('mf_announcements', arr); closeM('m-imp'); e.target.reset();
     }
-
     function del(k, id) { if(confirm('Удалить?')) DB.set(k, DB.get(k).filter(x=>x.id!==id)); }
-    function clear(k) { if(confirm('Очистить весь раздел?')) { localStorage.removeItem(k); render(); } }
+    function clear(k) { if(confirm('Очистить раздел?')) { localStorage.removeItem(k); render(); } }
     function openM(id) { document.getElementById(id).classList.add('open'); }
     function closeM(id) { document.getElementById(id).classList.remove('open'); }
 
     window.addEventListener('storage', render);
-    document.addEventListener('DOMContentLoaded', () => { 
-      render(); 
-      loadSettings(); 
-      loadKhutbah();
-    });
+    document.addEventListener('DOMContentLoaded', () => { render(); loadSettings(); loadKhutbah(); });
 
-    // === SERVICE WORKER (PWA) ===
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw-admin.js').catch(err => console.log('SW registration failed:', err));
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw-admin.js').catch(()=>{});
   </script>
   
-  <!-- 🔹 Модуль расписания намазов (тот же что у прихожанина) -->
   <script src="js/prayer-times.js"></script>
 </body>
 </html>
