@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Центральная мечеть — Община онлайн</title>
+  <meta name="theme-color" content="#1E5631">
+  <meta name="description" content="Приложение мечети: расписание, объявления, помощь общине">
+  <title>🕌 Мечеть — Община онлайн</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest-user.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://namaz-drab.vercel.app">
+  
   <style>
     :root {
       --p: #1E5631; --pd: #133A20; --a: #D4AF37;
@@ -56,7 +66,7 @@
     .badge-day { background: #E8F5E9; color: #2E7D32; }
 
     .toggle-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
 
     footer { background: var(--p); color: white; padding: 25px 20px; text-align: center; margin-top: 30px; }
     footer h3 { margin-bottom: 10px; font-size: 18px; }
@@ -68,6 +78,20 @@
     .lesson-time { font-size: 18px; font-weight: bold; color: var(--p); min-width: 60px; }
     .lesson-info h4 { font-size: 15px; margin-bottom: 2px; }
     .lesson-info span { font-size: 13px; color: var(--tl); }
+
+    /* PWA install prompt */
+    #install-prompt {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: var(--p); color: white; padding: 12px 20px; border-radius: 50px;
+      font-size: 14px; box-shadow: var(--sh); z-index: 200; display: none;
+      animation: slideUp 0.3s ease;
+    }
+    #install-prompt.show { display: flex; align-items: center; gap: 10px; }
+    #install-prompt button {
+      background: var(--a); color: #111; border: none; padding: 6px 16px;
+      border-radius: 20px; font-weight: 600; cursor: pointer;
+    }
+    @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
   </style>
 </head>
 <body>
@@ -77,33 +101,41 @@
     <p>Расписание, объявления и помощь общине</p>
   </header>
 
+  <!-- 🔹 ОБНОВЛЁННЫЕ ВКЛАДКИ: расписание первым, хутба добавлена, ифтар скрыт, никах убран -->
   <nav class="tabs">
-    <button class="tab-btn active" onclick="tab('imp', this)"><i>📢</i>Важное</button>
-    <button class="tab-btn" onclick="tab('sched', this)"><i>🕌</i>Расписание</button>
-    <button class="tab-btn" onclick="tab('ift', this)"><i>🍽️</i>Ифтар</button>
-    <button class="tab-btn" onclick="tab('ms', this)"><i>🤝</i>Помощь</button>
+    <button class="tab-btn active" onclick="tab('sched', this)"><i>🕌</i>Намаз</button>
+    <button class="tab-btn" onclick="tab('imp', this)"><i>📢</i>Важное</button>
+    <button class="tab-btn" onclick="tab('khutbah', this)"><i>📖</i>Хутба</button>
+    <button class="tab-btn" onclick="tab('ms', this)"><i>🤝</i>Волонтёры</button>
     <button class="tab-btn" onclick="tab('aid', this)"><i>🤲</i>Благотвор.</button>
     <button class="tab-btn" onclick="tab('don', this)"><i>💝</i>Садака</button>
-    <button class="tab-btn" onclick="tab('nik', this)"><i>💍</i>Никах</button>
+    <!-- 🌙 Ифтар скрыт до Рамадана: раскомментируйте за 10 дней до начала -->
+    <!-- <button class="tab-btn" onclick="tab('ift', this)"><i>🍽️</i>Ифтар</button> -->
   </nav>
 
   <main>
-    <!-- 1. ВАЖНОЕ -->
-    <section id="imp" class="section active">
-      <div id="ann-list"><div class="card" style="text-align:center;">📢 Загрузка...</div></div>
-    </section>
-
-    <!-- 2. РАСПИСАНИЕ (НАМАЗЫ + УРОКИ) -->
-    <section id="sched" class="section">
-      <div class="card">
-        <h3>🕌 Расписание намазов</h3>
-        <div id="sched-container">
-          <div style="text-align:center; padding:30px; color:var(--tl);">
-            🕐 Администратор загрузит актуальное расписание
-          </div>
+    <!-- 🔹 1. РАСПИСАНИЕ НАМАЗОВ — ПЕРВЫЙ ЭКРАН + РЕДИРЕКТ -->
+    <section id="sched" class="section active">
+      <!-- 🔗 Карточка-редирект на Намаз Челябинск -->
+      <div class="card" style="border:2px solid var(--a); background:#FFFBF0; text-align:center;">
+        <h3 style="color:#8B7500; margin:0 0 8px;">🕋 Время намазов на сегодня</h3>
+        <div style="display:flex; justify-content:center; gap:12px; margin:15px 0; font-weight:600; color:var(--p); flex-wrap:wrap;">
+          <span>Фаджр 05:12</span><span style="opacity:0.5">•</span><span>Зухр 12:45</span><span style="opacity:0.5">•</span><span>Аср 16:10</span><span style="opacity:0.5">•</span><span>Магриб 19:30</span><span style="opacity:0.5">•</span><span>Иша 20:55</span>
         </div>
+        <p style="font-size:13px; margin-bottom:12px; color:var(--tl);">
+          Точное время по вашим координатам • компас Киблы • уведомления
+        </p>
+        <a href="https://namaz-drab.vercel.app/" target="_blank" rel="noopener"
+           style="display:inline-block; padding:12px 24px; background:var(--p); color:white; 
+                  text-decoration:none; border-radius:10px; font-weight:600; font-size:15px;">
+          Открыть точное расписание →
+        </a>
+        <p style="font-size:11px; color:var(--tl); margin-top:10px;">
+          💡 При подключении вашей мечети расписание будет встроено в приложение
+        </p>
       </div>
       
+      <!-- Уроки (оставляем как было) -->
       <div class="card">
         <h3>📚 Расписание уроков</h3>
         <div id="lessons-list">
@@ -112,26 +144,24 @@
       </div>
     </section>
 
-    <!-- 3. ИФТАР -->
-    <section id="ift" class="section">
-      <div class="card" style="background:#FFF3E0; border:1px solid #FFB74D;">
-        <h3 style="color:#E65100; margin:0;">🌙 Рамадан: Запись на Ифтар</h3>
-      </div>
-      <div class="card">
-        <form onsubmit="sub(event, 'iftar')">
-          <div class="form-group"><label>ФИО *</label><input type="text" name="name" class="form-control" required></div>
-          <div class="form-group"><label>Телефон *</label><input type="tel" name="phone" class="form-control" required></div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div class="form-group"><label>Кол-во человек *</label><input type="number" name="count" class="form-control" min="1" value="1" required></div>
-            <div class="form-group"><label>Дата *</label><input type="date" name="date" class="form-control" required></div>
-          </div>
-          <button type="submit" class="btn btn-primary">📝 Записаться</button>
-        </form>
-      </div>
-      <div class="card"><h3>👥 Уже записались</h3><div id="ift-list"><div class="list-item" style="color:var(--tl);">Пока нет записей</div></div></div>
+    <!-- 🔹 2. ВАЖНОЕ (объявления) -->
+    <section id="imp" class="section">
+      <div id="ann-list"><div class="card" style="text-align:center;">📢 Загрузка...</div></div>
     </section>
 
-    <!-- 4. МАСТЕРА -->
+    <!-- 🔹 3. ПЯТНИЧНАЯ ХУТБА (НОВОЕ) -->
+    <section id="khutbah" class="section">
+      <div class="card" style="background:#E8F5E9; border:1px solid #4CAF50;">
+        <h3 style="color:#2E7D32; margin:0;">📖 Пятничная хутба</h3>
+      </div>
+      <div class="card">
+        <div id="khutbah-content" style="text-align:center; padding:20px; color:var(--tl);">
+          Тема проповеди будет опубликована в пятницу утром
+        </div>
+      </div>
+    </section>
+
+    <!-- 🔹 4. ВОЛОНТЁРЫ (бывшие "Мастера") -->
     <section id="ms" class="section">
       <div class="card" style="background:#E8F5E9; border:1px solid #4CAF50;">
         <h3 style="color:#2E7D32; margin:0;">🤝 Садака Джария своими руками</h3>
@@ -153,7 +183,7 @@
       </div>
     </section>
 
-    <!-- 5. БЛАГОТВОРИТЕЛЬНОСТЬ -->
+    <!-- 🔹 5. БЛАГОТВОРИТЕЛЬНОСТЬ -->
     <section id="aid" class="section">
       <div class="toggle-btns">
         <button class="btn btn-primary" onclick="aidToggle('req')">🆘 Нужна помощь</button>
@@ -183,7 +213,7 @@
       </div>
     </section>
 
-    <!-- 6. ПОЖЕРТВОВАНИЯ -->
+    <!-- 🔹 6. ПОЖЕРТВОВАНИЯ -->
     <section id="don" class="section">
       <div class="card">
         <h3>💝 Садака / Закят</h3>
@@ -200,20 +230,18 @@
       </div>
     </section>
 
-    <!-- 7. НИКАХ -->
-    <section id="nik" class="section">
-      <div class="card">
-        <h3>💍 Заявка на Никах</h3>
-        <form onsubmit="sub(event, 'nikahs')">
-          <div class="form-group"><label>Жених</label><input type="text" name="groom" class="form-control" required></div>
-          <div class="form-group"><label>Невеста</label><input type="text" name="bride" class="form-control" required></div>
-          <div class="form-group"><label>Телефон для связи</label><input type="tel" name="phone" class="form-control" required></div>
-          <div class="form-group"><label>Желаемая дата</label><input type="date" name="date" class="form-control" required></div>
-          <div class="checkbox-group"><input type="checkbox" required><label>Согласен на обработку данных</label></div>
-          <button type="submit" class="btn btn-primary">📝 Подать заявку</button>
-        </form>
-      </div>
-    </section>
+    <!-- 🔹 7. НИКАХ — СКРЫТАЯ ФОРМА (доступна по ?nikah=1) -->
+    <div id="nikah-form" class="hidden" style="padding:20px; background:var(--w); margin:20px; border-radius:12px; border:1px solid var(--b);">
+      <h3 style="color:var(--p); margin-bottom:15px; text-align:center;">💍 Заявка на Никах</h3>
+      <form onsubmit="sub(event, 'nikahs')">
+        <div class="form-group"><label>Жених *</label><input type="text" name="groom" class="form-control" required></div>
+        <div class="form-group"><label>Невеста *</label><input type="text" name="bride" class="form-control" required></div>
+        <div class="form-group"><label>Телефон для связи *</label><input type="tel" name="phone" class="form-control" required></div>
+        <div class="form-group"><label>Желаемая дата</label><input type="date" name="date" class="form-control"></div>
+        <button type="submit" class="btn btn-primary">📝 Отправить заявку</button>
+        <p style="font-size:12px; color:var(--tl); margin-top:10px; text-align:center;">Имам перезвонит вам в течение 24 часов, иншаАллах</p>
+      </form>
+    </div>
   </main>
 
   <footer>
@@ -223,9 +251,17 @@
     <p class="copy">© 2026 MasjidFlow · Разработано Nizamov.tech</p>
   </footer>
 
+  <!-- 🔹 PWA Install Prompt -->
+  <div id="install-prompt">
+    <span>📲 Установить приложение?</span>
+    <button id="install-btn">Установить</button>
+    <button id="install-dismiss" style="background:transparent; color:white; margin-left:8px;">✕</button>
+  </div>
+
   <div class="toast" id="toast">✅ Готово</div>
 
   <script>
+    // === TABS ===
     function tab(id, btn) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -233,22 +269,27 @@
       btn.classList.add('active');
     }
 
+    // === TOAST ===
     function toast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 2500);
     }
+
+    // === AID TOGGLE ===
     function aidToggle(type) {
       document.getElementById('aid-req').classList.toggle('hidden', type !== 'req');
       document.getElementById('aid-off').classList.toggle('hidden', type !== 'off');
     }
 
+    // === DB LAYER (localStorage) ===
     const DB = {
       get: k => JSON.parse(localStorage.getItem(`mf_${k}`) || '[]'),
       set: (k, v) => { localStorage.setItem(`mf_${k}`, JSON.stringify(v)); render(); }
     };
 
+    // === FORM SUBMIT ===
     function sub(e, key) {
       e.preventDefault();
       const form = e.target;
@@ -266,6 +307,7 @@
       render();
     }
 
+    // === CONTACTS ===
     function updateContacts() {
       const name = localStorage.getItem('mf_mosque_name') || 'Центральная мечеть';
       const addr = localStorage.getItem('mf_mosque_address') || 'Адрес не указан';
@@ -282,24 +324,12 @@
       }
     }
 
+    // === RENDER ===
     function render() {
       const ann = DB.get('announcements');
       document.getElementById('ann-list').innerHTML = ann.length 
         ? ann.map(a=>`<div class="card"><span class="badge ${a.urgent?'badge-urg':'badge-norm'}">${a.urgent?'🔥 СРОЧНО':'📢'}</span><h3 style="margin:8px 0 4px;">${a.title}</h3><p>${a.text}</p><small style="color:var(--tl)">📅 ${fmt(a.dateAdded)}</small></div>`).join('')
         : '<div class="card" style="text-align:center;">Нет новостей</div>';
-
-      const ift = DB.get('iftar');
-      document.getElementById('ift-list').innerHTML = ift.length 
-        ? ift.slice(0,5).map(i=>`<div class="list-item"><span>${i.name}</span><span style="color:var(--tl)">${i.count} чел • ${fmt(i.dateAdded)}</span></div>`).join('')
-        : '<div class="list-item" style="color:var(--tl);">Пока нет записей</div>';
-
-      const schedImg = localStorage.getItem('mf_schedule_image');
-      if (schedImg) {
-        document.getElementById('sched-container').innerHTML = 
-          `<img src="${schedImg}" style="width:100%; border-radius:8px; border:2px solid var(--a);">` +
-          `<p style="font-size:12px; color:var(--tl); margin-top:8px; text-align:center;">` +
-          `📅 Обновлено: ${fmt(localStorage.getItem('mf_schedule_date') || Date.now())}</p>`;
-      }
 
       // Уроки
       const lessons = DB.get('lessons');
@@ -318,13 +348,76 @@
         `).join('');
       }
 
+      // 🔹 ХУТБА
+      const khutbah = localStorage.getItem('mf_khutbah');
+      if (khutbah) {
+        const data = JSON.parse(khutbah);
+        document.getElementById('khutbah-content').innerHTML = 
+          `<p style="font-size:16px; margin-bottom:10px;"><strong>📖 Тема:</strong> ${escapeHtml(data.topic)}</p>` +
+          (data.imam ? `<p style="color:var(--tl); font-size:14px;">👤 Имам: ${escapeHtml(data.imam)}</p>` : '') +
+          `<p style="font-size:12px; color:var(--tl); margin-top:15px;">📅 ${fmt(data.date)}</p>`;
+      }
+
       updateContacts();
     }
 
+    // === UTILS ===
     function fmt(d) { return new Date(d).toLocaleDateString('ru-RU'); }
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
 
+    // === PWA INSTALL PROMPT ===
+    let deferredPrompt;
+    const installPrompt = document.getElementById('install-prompt');
+    const installBtn = document.getElementById('install-btn');
+    const dismissBtn = document.getElementById('install-dismiss');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installPrompt.classList.add('show');
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installPrompt.classList.remove('show');
+      }
+    });
+
+    dismissBtn.addEventListener('click', () => {
+      installPrompt.classList.remove('show');
+    });
+
+    // === SHOW NIKAH FORM IF ?nikah=1 ===
+    if (new URLSearchParams(window.location.search).get('nikah') === '1') {
+      document.getElementById('nikah-form').classList.remove('hidden');
+      document.getElementById('nikah-form').scrollIntoView({behavior:'smooth'});
+    }
+
+    // === EVENT LISTENERS ===
     window.addEventListener('storage', render);
-    document.addEventListener('DOMContentLoaded', () => { render(); updateContacts(); });
+    document.addEventListener('DOMContentLoaded', () => { 
+      render(); 
+      updateContacts(); 
+      
+      // Если расписание — активная вкладка, прокрутить к редиректу
+      if (document.getElementById('sched').classList.contains('active')) {
+        setTimeout(() => {
+          document.querySelector('#sched .card')?.scrollIntoView({behavior:'smooth', block:'start'});
+        }, 300);
+      }
+    });
+
+    // === SERVICE WORKER (PWA) ===
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw-user.js').catch(err => console.log('SW registration failed:', err));
+    }
   </script>
 </body>
 </html>
