@@ -260,6 +260,13 @@
   </div>
 
   <script>
+    // === 🔝 DB - ОБЪЯВЛЯЕМ ПЕРВЫМ! ===
+    const DB = {
+      get: k => JSON.parse(localStorage.getItem(`mf_${k}`) || '[]'),
+      set: (k, v) => { localStorage.setItem(`mf_${k}`, JSON.stringify(v)); render(); }
+    };
+
+    // === APP STATE ===
     const App = {
       key: 'mosque_app_session',
       role: null,
@@ -297,8 +304,7 @@
       }
     };
 
-    App.init();
-
+    // === TABS ===
     function tab(id, btn) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -306,6 +312,7 @@
       btn.classList.add('active');
     }
 
+    // === TOAST ===
     function toast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -313,16 +320,13 @@
       setTimeout(() => t.classList.remove('show'), 2500);
     }
 
+    // === AID TOGGLE ===
     function aidToggle(type) {
       document.getElementById('aid-req').classList.toggle('hidden', type !== 'req');
       document.getElementById('aid-off').classList.toggle('hidden', type !== 'off');
     }
 
-    const DB = {
-      get: k => JSON.parse(localStorage.getItem(`mf_${k}`) || '[]'),
-      set: (k, v) => { localStorage.setItem(`mf_${k}`, JSON.stringify(v)); render(); }
-    };
-
+    // === FORM SUBMIT ===
     function sub(e, key) {
       e.preventDefault();
       const form = e.target;
@@ -338,6 +342,7 @@
       toast('✅ Заявка отправлена!');
     }
 
+    // === CONTACTS ===
     function updateContacts() {
       const name = localStorage.getItem('mf_mosque_name') || 'Центральная мечеть';
       const addr = localStorage.getItem('mf_mosque_address') || 'Адрес не указан';
@@ -354,6 +359,7 @@
       }
     }
 
+    // === RENDER ===
     function render() {
       const ann = DB.get('announcements');
       document.getElementById('ann-list').innerHTML = ann.length 
@@ -393,6 +399,7 @@
       return div.innerHTML;
     }
 
+    // === PWA INSTALL ===
     let deferredPrompt;
     const installPrompt = document.getElementById('install-prompt');
     const installBtn = document.getElementById('install-btn');
@@ -417,13 +424,13 @@
       installPrompt.classList.remove('show');
     });
 
-    // === PRAYER TIMES — УСТОЙЧИВЫЙ К ПРОБЕЛАМ ===
+    // === PRAYER TIMES — С ОЧИСТКОЙ ПРОБЕЛОВ ===
     const PrayerTimes = {
       apiUrl: 'https://raw.githubusercontent.com/daniilnizamov7-star/Namaz/main/api/prayer-data.json',
       cacheKey: 'prayer_cache_v3',
 
       cleanJSON(str) {
-        // Удаляем все пробелы вокруг ключей и значений в JSON строке
+        // Удаляем пробелы вокруг ключей и значений
         return str.replace(/"\s*:\s*"/g, '":"')
                   .replace(/"\s*,\s*"/g, '","')
                   .replace(/"\s*}/g, '"}')
@@ -438,16 +445,11 @@
         const cleanSchedule = (data.schedule || []).map(item => {
           const cleanItem = {};
           for (const [key, value] of Object.entries(item)) {
-            const cleanKey = key.trim();
-            const cleanValue = typeof value === 'string' ? value.trim() : value;
-            cleanItem[cleanKey] = cleanValue;
+            cleanItem[key.trim()] = typeof value === 'string' ? value.trim() : value;
           }
           return cleanItem;
         });
-        return { 
-          monthName: (data.monthName || '').trim(),
-          schedule: cleanSchedule 
-        };
+        return { monthName: (data.monthName || '').trim(), schedule: cleanSchedule };
       },
 
       getToday(data) {
@@ -457,12 +459,8 @@
         const todayStr = `${currentDay} ${monthNames[today.getMonth()]}`;
         
         console.log(`🔍 Ищем дату: "${todayStr}"`);
-        console.log('Доступные даты:', data.schedule.map(s => s.date));
 
-        const entry = data.schedule?.find(item => {
-          const itemDate = (item.date || '').trim();
-          return itemDate === todayStr;
-        });
+        const entry = data.schedule?.find(item => (item.date || '').trim() === todayStr);
         
         if (entry) {
           console.log(`✅ Найдено:`, entry);
@@ -470,20 +468,13 @@
         }
 
         const fallback = data.schedule?.find(item => item.d === currentDay);
-        if (fallback) {
-           console.warn(`⚠️ По дате не нашли, взяли по номеру d=${currentDay}`);
-           return fallback;
-        }
+        if (fallback) return fallback;
 
-        console.warn('⚠️ День не найден');
         return data.schedule?.[0] || null;
       },
 
       renderUI(times) {
-        if (!times) {
-          console.error('❌ Нет данных для отображения');
-          return;
-        }
+        if (!times) return;
         
         const mapping = [
           { id: 'fajr-time', key: 'fajr' },
@@ -498,12 +489,7 @@
           const val = times[map.key];
           if (el && val) {
             el.style.opacity = '0';
-            setTimeout(() => {
-              el.textContent = val; 
-              el.style.opacity = '1';
-            }, 150);
-          } else {
-            console.warn(`⚠️ Не найдено: ${map.id} = ${val}`);
+            setTimeout(() => { el.textContent = val; el.style.opacity = '1'; }, 150);
           }
         });
 
@@ -527,10 +513,7 @@
         for (const p of prayers) {
           const timeStr = times[p.key];
           if (!timeStr) continue;
-          
           const [h, m] = timeStr.split(':').map(Number);
-          if (isNaN(h)) continue;
-
           if (h * 60 + m > nowMinutes) {
             const el = document.getElementById(p.id);
             if (el) el.classList.add('next-prayer');
@@ -541,53 +524,35 @@
 
       async init() {
         try {
-          console.log('📡 Загрузка расписания...');
+          console.log('📡 Загрузка...');
           const response = await fetch(`${this.apiUrl}?v=${Date.now()}`);
-          
           if (!response.ok) throw new Error('Ошибка сети');
           
           const rawText = await response.text();
-          console.log('📄 Получен JSON:', rawText.substring(0, 100) + '...');
-          
-          // Очищаем от пробелов перед парсингом
           const cleanText = this.cleanJSON(rawText);
           const rawData = JSON.parse(cleanText);
-          
           const cleanData = this.cleanData(rawData);
-          console.log('✅ Очищенные данные:', cleanData);
           
           const today = this.getToday(cleanData);
-          
           if (today) {
-            localStorage.setItem(this.cacheKey, JSON.stringify({ 
-              date: new Date().toDateString(), 
-              data: today 
-            }));
+            localStorage.setItem(this.cacheKey, JSON.stringify({ date: new Date().toDateString(),  today }));
             this.renderUI(today);
-          } else {
-            this.loadFromCache();
           }
         } catch (e) {
-          console.error('❌ Ошибка загрузки:', e);
-          this.loadFromCache();
-        }
-      },
-
-      loadFromCache() {
-        try {
+          console.error('❌ Ошибка:', e);
+          // Пробуем кэш
           const cached = localStorage.getItem(this.cacheKey);
           if (cached) {
             const { date, data } = JSON.parse(cached);
-            if (date === new Date().toDateString()) {
-              console.log('♻️ Загружено из кэша');
-              this.renderUI(data);
-            }
+            if (date === new Date().toDateString()) this.renderUI(data);
           }
-        } catch (e) { /* ignore */ }
+        }
       }
     };
 
+    // === ЗАПУСК ===
     window.addEventListener('storage', render);
+    App.init();
   </script>
 </body>
 </html>
