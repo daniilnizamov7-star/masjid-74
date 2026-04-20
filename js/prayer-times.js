@@ -4,20 +4,11 @@
  */
 
 const PrayerTimes = {
-  // Raw-ссылка на твой JSON
+  // 🔗 Raw-ссылка на твой prayer-data.json
   apiUrl: 'https://raw.githubusercontent.com/daniilnizamov7-star/Namaz/main/api/prayer-data.json',
   
   // Ключи для localStorage
   cacheKey: 'prayer_cache_v1',
-  
-  // Соответствие ключей
-  keys: {
-    fajr: 'fajr',
-    dhuhr: 'dhuhr',
-    asr: 'asr',
-    maghrib: 'maghrib',
-    isha: 'isha'
-  },
 
   /**
    * Найти данные на сегодня
@@ -26,34 +17,36 @@ const PrayerTimes = {
     const today = new Date();
     const currentDay = today.getDate();
     
-    // Ищем день в расписании
-    const entry = data.schedule.find(item => item.d === currentDay);
+    // Ищем день в расписании (d: 1, 2, 3...)
+    const entry = data.schedule?.find(item => item.d === currentDay);
     
     if (entry) {
-      console.log(`✅ Найдено расписание на ${currentDay} ${data.monthName}`);
+      console.log(`✅ Найдено расписание на ${currentDay} ${data.monthName?.trim()}`);
       return entry;
     }
     
-    // Если не нашли — берём первый день (запасной вариант)
+    // Если не нашли — берём первый день
     console.warn('⚠️ День не найден, используем первый день месяца');
-    return data.schedule[0];
+    return data.schedule?.[0];
   },
 
   /**
    * Обновить интерфейс
    */
   renderUI(times) {
+    if (!times) return;
+    
     const elements = {
-      'fajr-time': times.fajr,
-      'dhuhr-time': times.dhuhr,
-      'asr-time': times.asr,
-      'maghrib-time': times.maghrib,
-      'isha-time': times.isha
+      'fajr-time': times.fajr?.trim(),
+      'dhuhr-time': times.dhuhr?.trim(),
+      'asr-time': times.asr?.trim(),
+      'maghrib-time': times.maghrib?.trim(),
+      'isha-time': times.isha?.trim()
     };
 
     for (const [id, time] of Object.entries(elements)) {
       const el = document.getElementById(id);
-      if (el) {
+      if (el && time) {
         // Плавное обновление
         el.style.transition = 'opacity 0.2s';
         el.style.opacity = '0';
@@ -76,11 +69,11 @@ const PrayerTimes = {
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
     
     const prayers = [
-      { id: 'fajr-time', time: times.fajr },
-      { id: 'dhuhr-time', time: times.dhuhr },
-      { id: 'asr-time', time: times.asr },
-      { id: 'maghrib-time', time: times.maghrib },
-      { id: 'isha-time', time: times.isha }
+      { id: 'fajr-time', time: times.fajr?.trim() },
+      { id: 'dhuhr-time', time: times.dhuhr?.trim() },
+      { id: 'asr-time', time: times.asr?.trim() },
+      { id: 'maghrib-time', time: times.maghrib?.trim() },
+      { id: 'isha-time', time: times.isha?.trim() }
     ];
 
     // Убираем старую подсветку
@@ -90,6 +83,7 @@ const PrayerTimes = {
 
     // Находим следующий
     for (const p of prayers) {
+      if (!p.time) continue;
       const [h, m] = p.time.split(':').map(Number);
       const prayerMinutes = h * 60 + m;
       
@@ -106,30 +100,31 @@ const PrayerTimes = {
    */
   async init() {
     try {
-      // Пробуем загрузить с GitHub
-      const response = await fetch(this.apiUrl + '?t=' + Date.now()); // ?t=... чтобы не кэшировалось
+      // Загружаем с ?t=... чтобы браузер не кэшировал
+      const response = await fetch(this.apiUrl + '?t=' + Date.now());
       if (!response.ok) throw new Error('HTTP ' + response.status);
       
       const data = await response.json();
       const today = this.getToday(data);
       
-      // Кэшируем в localStorage
-      localStorage.setItem(this.cacheKey, JSON.stringify({
-        date: new Date().toDateString(),
-        data: today
-      }));
-      
-      // Обновляем UI
-      this.renderUI(today);
+      if (today) {
+        // Кэшируем
+        localStorage.setItem(this.cacheKey, JSON.stringify({
+          date: new Date().toDateString(),
+          data: today
+        }));
+        
+        // Обновляем UI
+        this.renderUI(today);
+      }
       
     } catch (error) {
-      console.error('❌ Ошибка загрузки:', error);
+      console.error('❌ Ошибка загрузки расписания:', error);
       
       // Пробуем загрузить из кэша
       const cached = localStorage.getItem(this.cacheKey);
       if (cached) {
         const { date, data } = JSON.parse(cached);
-        // Если кэш сегодня — показываем
         if (date === new Date().toDateString()) {
           console.log('✅ Загружено из кэша');
           this.renderUI(data);
@@ -137,7 +132,7 @@ const PrayerTimes = {
         }
       }
       
-      // Если ничего не вышло — показываем запасное
+      // Запасные данные
       console.warn('⚠️ Используем запасное расписание');
       this.renderUI({
         fajr: '04:05',
