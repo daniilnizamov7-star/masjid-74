@@ -105,170 +105,220 @@
       font-weight: 700;
       box-shadow: 0 2px 8px rgba(212,175,55,0.4);
     }
+
+    /* Стили для экрана выбора роли */
+    #role-selector {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 20px; background: var(--bg); text-align: center;
+    }
+    #role-selector h1 { color: var(--p); margin-bottom: 10px; }
+    #role-selector p { color: var(--tl); margin-bottom: 30px; }
+    .role-options { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1 id="site-title">🕌 Центральная мечеть</h1>
-    <p>Расписание, объявления и помощь общине</p>
-  </header>
-
-  <!-- 🔹 ОБНОВЛЁННЫЕ ВКЛАДКИ -->
-  <nav class="tabs">
-    <button class="tab-btn active" onclick="tab('sched', this)"><i>🕌</i>Намаз</button>
-    <button class="tab-btn" onclick="tab('imp', this)"><i>📢</i>Важное</button>
-    <button class="tab-btn" onclick="tab('khutbah', this)"><i>📖</i>Хутба</button>
-    <button class="tab-btn" onclick="tab('ms', this)"><i>🤝</i>Волонтёры</button>
-    <button class="tab-btn" onclick="tab('aid', this)"><i>🤲</i>Благотвор.</button>
-    <!-- 💝 Садака/Закят убран — нет платежки -->
-    <!-- 🌙 Ифтар скрыт до Рамадана -->
-    <!-- <button class="tab-btn" onclick="tab('ift', this)"><i>🍽️</i>Ифтар</button> -->
-  </nav>
-
-  <main>
-    <!-- 🔹 1. РАСПИСАНИЕ НАМАЗОВ — ПЕРВЫЙ ЭКРАН + ДИНАМИЧЕСКОЕ ВРЕМЯ -->
-    <section id="sched" class="section active">
-      <div class="card" style="border:2px solid var(--a); background:#FFFBF0; text-align:center;">
-        <h3 style="color:#8B7500; margin:0 0 8px;">🕋 Время намазов на сегодня</h3>
-        
-        <!-- 🔹 Динамические времена с id для JS -->
-        <div style="display:flex; justify-content:center; gap:12px; margin:15px 0; font-weight:600; color:var(--p); flex-wrap:wrap;">
-          <span class="prayer-time">Фаджр <span id="fajr-time">--:--</span></span>
-          <span style="opacity:0.5">•</span>
-          <span class="prayer-time">Зухр <span id="dhuhr-time">--:--</span></span>
-          <span style="opacity:0.5">•</span>
-          <span class="prayer-time">Аср <span id="asr-time">--:--</span></span>
-          <span style="opacity:0.5">•</span>
-          <span class="prayer-time">Магриб <span id="maghrib-time">--:--</span></span>
-          <span style="opacity:0.5">•</span>
-          <span class="prayer-time">Иша <span id="isha-time">--:--</span></span>
-        </div>
-        
-        <p style="font-size:13px; margin-bottom:12px; color:var(--tl);">
-          Автоматически с Namaz Chelyabinsk • компас Киблы • уведомления
-        </p>
-        
-        <a href="https://namaz-drab.vercel.app/" target="_blank" rel="noopener"
-           style="display:inline-block; padding:12px 24px; background:var(--p); color:white; 
-                  text-decoration:none; border-radius:10px; font-weight:600; font-size:15px;">
-          Открыть точное расписание →
-        </a>
-        
-        <p style="font-size:11px; color:var(--tl); margin-top:10px;">
-          💡 При подключении вашей мечети расписание будет встроено в приложение
-        </p>
-      </div>
-      
-      <!-- Уроки -->
-      <div class="card">
-        <h3>📚 Расписание уроков</h3>
-        <div id="lessons-list">
-          <div style="text-align:center; padding:20px; color:var(--tl);">Загрузка расписания...</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 🔹 2. ВАЖНОЕ (объявления) -->
-    <section id="imp" class="section">
-      <div id="ann-list"><div class="card" style="text-align:center;">📢 Загрузка...</div></div>
-    </section>
-
-    <!-- 🔹 3. ПЯТНИЧНАЯ ХУТБА -->
-    <section id="khutbah" class="section">
-      <div class="card" style="background:#E8F5E9; border:1px solid #4CAF50;">
-        <h3 style="color:#2E7D32; margin:0;">📖 Пятничная хутба</h3>
-      </div>
-      <div class="card">
-        <div id="khutbah-content" style="text-align:center; padding:20px; color:var(--tl);">
-          Тема проповеди будет опубликована в пятницу утром
-        </div>
-      </div>
-    </section>
-
-    <!-- 🔹 4. ВОЛОНТЁРЫ -->
-    <section id="ms" class="section">
-      <div class="card" style="background:#E8F5E9; border:1px solid #4CAF50;">
-        <h3 style="color:#2E7D32; margin:0;">🤝 Садака Джария своими руками</h3>
-      </div>
-      <div class="card">
-        <p>Не можете помочь деньгами? Предложите свои навыки. <strong>Ваши данные увидит только Администратор мечети.</strong></p>
-        <form onsubmit="sub(event, 'masters')">
-          <div class="form-group"><label>Ваше ФИО *</label><input type="text" name="name" class="form-control" required></div>
-          <div class="form-group"><label>Телефон *</label><input type="tel" name="phone" class="form-control" required></div>
-          <div class="form-group"><label>Профессия / Навык *</label>
-            <select name="prof" class="form-control" required>
-              <option>Электрик</option><option>Сантехник</option><option>Строитель/Отделка</option><option>Уборка/Благоустройство</option><option>IT/Программирование</option><option>Водитель</option><option>Другое</option>
-            </select>
-          </div>
-          <div class="form-group"><label>Что конкретно можете сделать?</label><textarea name="skills" class="form-control" rows="2" placeholder="Например: ремонт проводки, установка дверей..."></textarea></div>
-          <div class="checkbox-group"><input type="checkbox" required><label>Согласен передать контакты только Администратору</label></div>
-          <button type="submit" class="btn btn-accent">🤝 Предложить помощь</button>
-        </form>
-      </div>
-    </section>
-
-    <!-- 🔹 5. БЛАГОТВОРИТЕЛЬНОСТЬ -->
-    <section id="aid" class="section">
-      <div class="toggle-btns">
-        <button class="btn btn-primary" onclick="aidToggle('req')">🆘 Нужна помощь</button>
-        <button class="btn btn-outline" onclick="aidToggle('off')">❤️ Хочу помочь</button>
-      </div>
-      
-      <div id="aid-req" class="card hidden">
-        <h3>🆘 Запрос помощи</h3>
-        <p style="font-size:13px;">Ваш запрос анонимен для братьев. Контакты видит только Админ.</p>
-        <form onsubmit="sub(event, 'aid')">
-          <input type="hidden" name="type" value="request">
-          <div class="form-group"><label>Что нужно? (Одежда, продукты, быт)</label><textarea name="desc" class="form-control" rows="2" required></textarea></div>
-          <div class="form-group"><label>Ваш телефон (только для Админа)</label><input type="tel" name="phone" class="form-control" required></div>
-          <button type="submit" class="btn btn-primary">🆘 Отправить запрос</button>
-        </form>
-      </div>
-
-      <div id="aid-off" class="card hidden">
-        <h3>❤️ Предложение помощи</h3>
-        <form onsubmit="sub(event, 'aid')">
-          <input type="hidden" name="type" value="offer">
-          <div class="form-group"><label>Что можете дать?</label><textarea name="desc" class="form-control" rows="2" required></textarea></div>
-          <div class="form-group"><label>Ваше имя</label><input type="text" name="name" class="form-control" required></div>
-          <div class="form-group"><label>Ваш телефон</label><input type="tel" name="phone" class="form-control" required></div>
-          <button type="submit" class="btn btn-accent">❤️ Предложить</button>
-        </form>
-      </div>
-    </section>
-
-    <!-- 🔹 6. НИКАХ — СКРЫТАЯ ФОРМА (доступна по ?nikah=1) -->
-    <div id="nikah-form" class="hidden" style="padding:20px; background:var(--w); margin:20px; border-radius:12px; border:1px solid var(--b);">
-      <h3 style="color:var(--p); margin-bottom:15px; text-align:center;">💍 Заявка на Никах</h3>
-      <form onsubmit="sub(event, 'nikahs')">
-        <div class="form-group"><label>Жених *</label><input type="text" name="groom" class="form-control" required></div>
-        <div class="form-group"><label>Невеста *</label><input type="text" name="bride" class="form-control" required></div>
-        <div class="form-group"><label>Телефон для связи *</label><input type="tel" name="phone" class="form-control" required></div>
-        <div class="form-group"><label>Желаемая дата</label><input type="date" name="date" class="form-control"></div>
-        <button type="submit" class="btn btn-primary">📝 Отправить заявку</button>
-        <p style="font-size:12px; color:var(--tl); margin-top:10px; text-align:center;">Имам перезвонит вам в течение 24 часов, иншаАллах</p>
-      </form>
+  <!-- ЭКРАН ВЫБОРА РОЛИ (появляется только первый раз) -->
+  <div id="role-selector" class="hidden">
+    <h1>🕌 Добро пожаловать</h1>
+    <p>Приложение мечети</p>
+    <div class="role-options">
+      <button onclick="App.setRole('member')" class="btn btn-primary">👤 Я прихожанин</button>
+      <button onclick="App.setRole('admin')" class="btn btn-accent">👨‍ Я имам / Админ</button>
     </div>
-  </main>
-
-  <footer>
-    <h3 id="footer-title">🕌 Центральная мечеть</h3>
-    <p id="footer-addr">📍 Адрес не указан</p>
-    <p id="footer-phone">📞 <a href="#">Телефон не указан</a></p>
-    <p class="copy">© 2026 MasjidFlow · Разработано Nizamov.tech</p>
-  </footer>
-
-  <!-- 🔹 PWA Install Prompt -->
-  <div id="install-prompt">
-    <span>📲 Установить приложение?</span>
-    <button id="install-btn">Установить</button>
-    <button id="install-dismiss" style="background:transparent; color:white; margin-left:8px;">✕</button>
+    <p style="margin-top:30px;font-size:12px;color:var(--tl);">Выбор сохраняется на устройстве.</p>
   </div>
 
-  <div class="toast" id="toast">✅ Готово</div>
+  <!-- ОСНОВНОЙ ИНТЕРФЕЙС (скрыт до выбора роли) -->
+  <div id="app-interface" class="hidden">
+    <header>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h1 id="site-title">🕌 Центральная мечеть</h1>
+          <p id="user-role-display">Режим прихожанина</p>
+        </div>
+        <button onclick="App.logout()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Сменить роль</button>
+      </div>
+    </header>
+
+    <!-- Вкладки (Показываем только для прихожанина, у админа своя навигация или этот же интерфейс с админ-панелью) -->
+    <nav class="tabs" id="main-nav">
+      <button class="tab-btn active" onclick="tab('sched', this)"><i>🕌</i>Намаз</button>
+      <button class="tab-btn" onclick="tab('imp', this)"><i>📢</i>Важное</button>
+      <button class="tab-btn" onclick="tab('khutbah', this)"><i>📖</i>Хутба</button>
+      <button class="tab-btn" onclick="tab('ms', this)"><i>🤝</i>Волонтёры</button>
+      <button class="tab-btn" onclick="tab('aid', this)"><i>🤲</i>Благотвор.</button>
+    </nav>
+
+    <main>
+      <!-- 🔹 1. РАСПИСАНИЕ НАМАЗОВ — ПЕРВЫЙ ЭКРАН -->
+      <section id="sched" class="section active">
+        <div class="card" style="border:2px solid var(--a); background:#FFFBF0; text-align:center;">
+          <h3 style="color:#8B7500; margin:0 0 8px;">🕋 Время намазов на сегодня</h3>
+          
+          <div style="display:flex; justify-content:center; gap:12px; margin:15px 0; font-weight:600; color:var(--p); flex-wrap:wrap;">
+            <span class="prayer-time">Фаджр <span id="fajr-time">--:--</span></span>
+            <span style="opacity:0.5">•</span>
+            <span class="prayer-time">Зухр <span id="dhuhr-time">--:--</span></span>
+            <span style="opacity:0.5">•</span>
+            <span class="prayer-time">Аср <span id="asr-time">--:--</span></span>
+            <span style="opacity:0.5">•</span>
+            <span class="prayer-time">Магриб <span id="maghrib-time">--:--</span></span>
+            <span style="opacity:0.5">•</span>
+            <span class="prayer-time">Иша <span id="isha-time">--:--</span></span>
+          </div>
+          
+          <p style="font-size:13px; margin-bottom:12px; color:var(--tl);">
+            Автоматически с Namaz Chelyabinsk
+          </p>
+          
+          <a href="https://namaz-drab.vercel.app/" target="_blank" rel="noopener"
+             style="display:inline-block; padding:12px 24px; background:var(--p); color:white; 
+                    text-decoration:none; border-radius:10px; font-weight:600; font-size:15px;">
+            Открыть точное расписание →
+          </a>
+        </div>
+        
+        <div class="card">
+          <h3>📚 Расписание уроков</h3>
+          <div id="lessons-list">
+            <div style="text-align:center; padding:20px; color:var(--tl);">Загрузка...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 🔹 2. ВАЖНОЕ -->
+      <section id="imp" class="section">
+        <div id="ann-list"><div class="card" style="text-align:center;">📢 Загрузка...</div></div>
+      </section>
+
+      <!-- 🔹 3. ХУТБА -->
+      <section id="khutbah" class="section">
+        <div class="card" style="background:#E8F5E9; border:1px solid #4CAF50;">
+          <h3 style="color:#2E7D32; margin:0;">📖 Пятничная хутба</h3>
+        </div>
+        <div class="card">
+          <div id="khutbah-content" style="text-align:center; padding:20px; color:var(--tl);">
+            Тема проповеди будет опубликована в пятницу утром
+          </div>
+        </div>
+      </section>
+
+      <!-- 🔹 4. ВОЛОНТЁРЫ -->
+      <section id="ms" class="section">
+        <div class="card" style="background:#E8F5E9; border:1px solid #4CAF50;">
+          <h3 style="color:#2E7D32; margin:0;">🤝 Садака Джария своими руками</h3>
+        </div>
+        <div class="card">
+          <p>Не можете помочь деньгами? Предложите свои навыки. <strong>Ваши данные увидит только Администратор мечети.</strong></p>
+          <form onsubmit="sub(event, 'masters')">
+            <div class="form-group"><label>Ваше ФИО *</label><input type="text" name="name" class="form-control" required></div>
+            <div class="form-group"><label>Телефон *</label><input type="tel" name="phone" class="form-control" required></div>
+            <div class="form-group"><label>Профессия / Навык *</label>
+              <select name="prof" class="form-control" required>
+                <option>Электрик</option><option>Сантехник</option><option>Строитель/Отделка</option><option>Уборка/Благоустройство</option><option>IT/Программирование</option><option>Водитель</option><option>Другое</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Что конкретно можете сделать?</label><textarea name="skills" class="form-control" rows="2" placeholder="Например: ремонт проводки..."></textarea></div>
+            <div class="checkbox-group"><input type="checkbox" required><label>Согласен передать контакты только Администратору</label></div>
+            <button type="submit" class="btn btn-accent">🤝 Предложить помощь</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- 🔹 5. БЛАГОТВОРИТЕЛЬНОСТЬ -->
+      <section id="aid" class="section">
+        <div class="toggle-btns">
+          <button class="btn btn-primary" onclick="aidToggle('req')">🆘 Нужна помощь</button>
+          <button class="btn btn-outline" onclick="aidToggle('off')">❤️ Хочу помочь</button>
+        </div>
+        
+        <div id="aid-req" class="card hidden">
+          <h3>🆘 Запрос помощи</h3>
+          <p style="font-size:13px;">Ваш запрос анонимен. Контакты видит только Админ.</p>
+          <form onsubmit="sub(event, 'aid')">
+            <input type="hidden" name="type" value="request">
+            <div class="form-group"><label>Что нужно?</label><textarea name="desc" class="form-control" rows="2" required></textarea></div>
+            <div class="form-group"><label>Ваш телефон</label><input type="tel" name="phone" class="form-control" required></div>
+            <button type="submit" class="btn btn-primary">🆘 Отправить</button>
+          </form>
+        </div>
+
+        <div id="aid-off" class="card hidden">
+          <h3>❤️ Предложение помощи</h3>
+          <form onsubmit="sub(event, 'aid')">
+            <input type="hidden" name="type" value="offer">
+            <div class="form-group"><label>Что можете дать?</label><textarea name="desc" class="form-control" rows="2" required></textarea></div>
+            <div class="form-group"><label>Ваше имя</label><input type="text" name="name" class="form-control" required></div>
+            <div class="form-group"><label>Ваш телефон</label><input type="tel" name="phone" class="form-control" required></div>
+            <button type="submit" class="btn btn-accent">❤️ Предложить</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <h3 id="footer-title">🕌 Центральная мечеть</h3>
+      <p id="footer-addr">📍 Адрес не указан</p>
+      <p id="footer-phone">📞 <a href="#">Телефон не указан</a></p>
+      <p class="copy">© 2026 MasjidFlow · Разработано Nizamov.tech</p>
+    </footer>
+
+    <div id="install-prompt">
+      <span>📲 Установить приложение?</span>
+      <button id="install-btn">Установить</button>
+      <button id="install-dismiss" style="background:transparent; color:white; margin-left:8px;">✕</button>
+    </div>
+
+    <div class="toast" id="toast">✅ Готово</div>
+  </div>
 
   <script>
+    // === SMART STATE MANAGEMENT (Умное состояние) ===
+    const App = {
+      key: 'mosque_app_session',
+      role: null,
+
+      init() {
+        const saved = localStorage.getItem(this.key);
+        this.role = saved || null;
+
+        if (!this.role) {
+          // Первый раз: показываем выбор
+          document.getElementById('role-selector').classList.remove('hidden');
+          document.getElementById('app-interface').classList.add('hidden');
+        } else {
+          // Уже выбрана роль: загружаем интерфейс
+          document.getElementById('role-selector').classList.add('hidden');
+          document.getElementById('app-interface').classList.remove('hidden');
+          
+          // Если админ — перенаправляем в админку (админка лежит в папке admin)
+          if (this.role === 'admin') {
+            window.location.href = 'admin/index.html';
+          } else {
+            // Если прихожанин — запускаем приложение
+            document.getElementById('user-role-display').textContent = 'Режим прихожанина';
+            render();
+            updateContacts();
+            PrayerTimes.init();
+          }
+        }
+      },
+
+      setRole(role) {
+        localStorage.setItem(this.key, role);
+        window.location.reload();
+      },
+
+      logout() {
+        localStorage.removeItem(this.key);
+        window.location.reload();
+      }
+    };
+
+    // Запуск при загрузке
+    App.init();
+
     // === TABS ===
     function tab(id, btn) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -304,15 +354,13 @@
       const data = Object.fromEntries(new FormData(form));
       data.id = Date.now();
       data.dateAdded = new Date().toISOString();
-      if(key === 'iftar') data.date = form.date.value; 
       
       const arr = DB.get(key);
       arr.unshift(data);
       DB.set(key, arr);
       
       form.reset();
-      toast(`✅ ${key==='iftar'?'Запись принята':key==='masters'?'Баракаллаху!':'Заявка отправлена!'}`);
-      render();
+      toast('✅ Заявка отправлена!');
     }
 
     // === CONTACTS ===
@@ -339,7 +387,6 @@
         ? ann.map(a=>`<div class="card"><span class="badge ${a.urgent?'badge-urg':'badge-norm'}">${a.urgent?'🔥 СРОЧНО':'📢'}</span><h3 style="margin:8px 0 4px;">${a.title}</h3><p>${a.text}</p><small style="color:var(--tl)">📅 ${fmt(a.dateAdded)}</small></div>`).join('')
         : '<div class="card" style="text-align:center;">Нет новостей</div>';
 
-      // Уроки
       const lessons = DB.get('lessons');
       const lessonsDiv = document.getElementById('lessons-list');
       if (lessons.length === 0) {
@@ -356,7 +403,6 @@
         `).join('');
       }
 
-      // 🔹 ХУТБА
       const khutbah = localStorage.getItem('mf_khutbah');
       if (khutbah) {
         const data = JSON.parse(khutbah);
@@ -365,11 +411,8 @@
           (data.imam ? `<p style="color:var(--tl); font-size:14px;">👤 Имам: ${escapeHtml(data.imam)}</p>` : '') +
           `<p style="font-size:12px; color:var(--tl); margin-top:15px;">📅 ${fmt(data.date)}</p>`;
       }
-
-      updateContacts();
     }
 
-    // === UTILS ===
     function fmt(d) { return new Date(d).toLocaleDateString('ru-RU'); }
     function escapeHtml(str) {
       const div = document.createElement('div');
@@ -402,32 +445,87 @@
       installPrompt.classList.remove('show');
     });
 
-    // === SHOW NIKAH FORM IF ?nikah=1 ===
-    if (new URLSearchParams(window.location.search).get('nikah') === '1') {
-      document.getElementById('nikah-form').classList.remove('hidden');
-      document.getElementById('nikah-form').scrollIntoView({behavior:'smooth'});
-    }
+    // === PRAYER TIMES MODULE (Встроенный для простоты) ===
+    const PrayerTimes = {
+      apiUrl: 'https://raw.githubusercontent.com/daniilnizamov7-star/Namaz/main/api/prayer-data.json',
+      cacheKey: 'prayer_cache_v1',
 
-    // === EVENT LISTENERS ===
-    window.addEventListener('storage', render);
-    document.addEventListener('DOMContentLoaded', () => { 
-      render(); 
-      updateContacts(); 
-      
-      if (document.getElementById('sched').classList.contains('active')) {
-        setTimeout(() => {
-          document.querySelector('#sched .card')?.scrollIntoView({behavior:'smooth', block:'start'});
-        }, 300);
+      getToday(data) {
+        const today = new Date();
+        const currentDay = today.getDate();
+        const monthNames = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+        const todayStr = `${currentDay} ${monthNames[today.getMonth()]}`;
+        
+        const entry = data.schedule?.find(item => item.date?.trim() === todayStr);
+        return entry || data.schedule?.[0];
+      },
+
+      renderUI(times) {
+        if (!times) return;
+        const elements = {
+          'fajr-time': times.fajr?.trim(),
+          'dhuhr-time': times.dhuhr?.trim(),
+          'asr-time': times.asr?.trim(),
+          'maghrib-time': times.maghrib?.trim(),
+          'isha-time': times.isha?.trim()
+        };
+
+        for (const [id, time] of Object.entries(elements)) {
+          const el = document.getElementById(id);
+          if (el && time) {
+            el.style.transition = 'opacity 0.2s';
+            el.style.opacity = '0';
+            setTimeout(() => { el.textContent = time; el.style.opacity = '1'; }, 100);
+          }
+        }
+        this.highlightNext(times);
+      },
+
+      highlightNext(times) {
+        const now = new Date();
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const prayers = [
+          { id: 'fajr-time', time: times.fajr?.trim() },
+          { id: 'dhuhr-time', time: times.dhuhr?.trim() },
+          { id: 'asr-time', time: times.asr?.trim() },
+          { id: 'maghrib-time', time: times.maghrib?.trim() },
+          { id: 'isha-time', time: times.isha?.trim() }
+        ];
+
+        document.querySelectorAll('.prayer-time').forEach(el => el.classList.remove('next-prayer'));
+
+        for (const p of prayers) {
+          if (!p.time) continue;
+          const [h, m] = p.time.split(':').map(Number);
+          if (h * 60 + m > nowMinutes) {
+            const el = document.getElementById(p.id);
+            if (el) el.classList.add('next-prayer');
+            break;
+          }
+        }
+      },
+
+      init() {
+        const cached = localStorage.getItem(this.cacheKey);
+        if (cached) {
+          const { date, data } = JSON.parse(cached);
+          if (date === new Date().toDateString()) this.renderUI(data);
+        }
+
+        fetch(this.apiUrl + '?t=' + Date.now())
+          .then(r => r.json())
+          .then(data => {
+            const today = this.getToday(data);
+            if (today) {
+              localStorage.setItem(this.cacheKey, JSON.stringify({ date: new Date().toDateString(), data: today }));
+              this.renderUI(today);
+            }
+          })
+          .catch(() => console.log('Offline mode'));
       }
-    });
+    };
 
-    // === SERVICE WORKER (PWA) ===
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw-user.js').catch(err => console.log('SW registration failed:', err));
-    }
+    window.addEventListener('storage', render);
   </script>
-  
-  <!-- 🔹 Модуль расписания намазов (загружает данные с GitHub) -->
-  <script src="js/prayer-times.js"></script>
 </body>
 </html>
